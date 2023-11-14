@@ -2,6 +2,7 @@ create table user (
 	id bigint not null auto_increment,
 	name varchar(60)not null,
 	email varchar(60) not null unique,
+	user varchar(15) not null unique,
 	password varchar(255)not null,
 	role varchar(10)not null,
 

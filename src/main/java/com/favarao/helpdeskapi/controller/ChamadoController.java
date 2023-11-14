@@ -1,6 +1,7 @@
 package com.favarao.helpdeskapi.controller;
 
 import com.favarao.helpdeskapi.constant.StatusChamadoConstant;
+import com.favarao.helpdeskapi.constant.UsuarioPermissao;
 import com.favarao.helpdeskapi.dto.ChamadoDto;
 import com.favarao.helpdeskapi.dto.UserDto;
 import com.favarao.helpdeskapi.entity.Chamado;
@@ -49,22 +50,52 @@ public class ChamadoController {
         return chamadoRepository.save(newChamado);
     }
 
-    @GetMapping
-    private List<Chamado> listar(){
-        return chamadoRepository.findAll();
-    }
-
     @PostMapping("/{chamadoId}")
     public ResponseEntity<Chamado> iniciarChamado(@PathVariable Long chamadoId, @RequestBody UserDto responsavelId){
         Chamado chamado = chamadoRepository.findById(chamadoId).orElseThrow(() -> new RuntimeException("Chamado não encontrado!"));
         User responsavel = userRepository.findById(responsavelId.id()).orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
 
-        if(responsavel.getRole().equals("ADMIN")){
+        if(responsavel.getRole().equals(UsuarioPermissao.ADMIN)){
             chamado.setResponsavel(responsavel);
             chamado.setStatus(StatusChamadoConstant.EM_ANDAMENTO);
             chamadoRepository.save(chamado);
             return ResponseEntity.ok(chamado);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("/finalizar/{chamadoId}")
+    public ResponseEntity<Chamado> finalizarChamado(@PathVariable Long chamadoId){
+        Chamado chamadoFinalizar = chamadoRepository.findById(chamadoId).get();
+        chamadoFinalizar.setStatus(StatusChamadoConstant.FINALIZADO);
+
+        return ResponseEntity.ok(chamadoRepository.save(chamadoFinalizar));
+    }
+
+    @GetMapping
+    private List<Chamado> listar(){
+        return chamadoRepository.findAll();
+    }
+
+    @GetMapping("/abertoAndamento")
+    private List<Chamado> listarAbertoAndamento(){
+        return chamadoService.listarAbertosAndamento(chamadoRepository.findAll());
+    }
+
+    @GetMapping("/responsavel/{responsavelId}")
+    public List<Chamado> listarChamadoPorResponsavel(@PathVariable Long responsavelId){
+        return chamadoRepository.findByResponsavel(userRepository.findById(responsavelId).orElseThrow(() -> new RuntimeException("User not found!")));
+    }
+
+    @GetMapping("/solicitante/{solicitanteId}")
+    public List<Chamado> listarChamadoPorSolicitante(@PathVariable Long solicitanteId){
+        return chamadoRepository.findBySolicitante(userRepository.findById(solicitanteId).orElseThrow(() -> new RuntimeException("User not found!")));
+    }
+
+    @GetMapping("/{chamadoId}")
+    public ResponseEntity<Chamado> buscarPorId(@PathVariable Long chamadoId){
+        return chamadoRepository.findById(chamadoId)
+                .map(chamado -> ResponseEntity.ok(chamado))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

@@ -1,19 +1,17 @@
 package com.favarao.helpdeskapi.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 public record UserDto(
-        @NotBlank
         Long id,
-        @Size(max = 60)
-        @NotBlank
+        @NotBlank(message = "Name is required.")
         String name,
-        @Email
-        @NotBlank
-        @Size(max = 60)
+        @NotBlank(message = "User is required.")
+        String user,
+        @NotBlank(message = "Email is required.")
         String email,
-        @NotBlank
+        @NotBlank(message = "Password is required.")
+        String password,
+        @NotBlank(message = "Role is required.")
         String role
 ){}

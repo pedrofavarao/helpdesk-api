@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TokenService tokenService;
+
 
     public UserDto getUser(Long userId){
         User user = userRepository.findById(userId).get();

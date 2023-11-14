@@ -1,6 +1,6 @@
 package com.favarao.helpdeskapi.constant;
 
-public class AuthConstant {
+public class PathAuthConstant {
     public static final String VERSION = "v1";
 
     public static final String BASE_PATH = "/api/" + VERSION;

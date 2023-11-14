@@ -1,2 +1,4 @@
-package com.favarao.helpdeskapi.constant;public class PathChamadoConstant {
+package com.favarao.helpdeskapi.constant;
+
+public class PathChamadoConstant {
 }

@@ -1,4 +1,4 @@
 package com.favarao.helpdeskapi.constant;
 
-public class UserConstant {
+public class PathUserConstant {
 }

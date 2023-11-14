@@ -1,13 +1,16 @@
 package com.favarao.helpdeskapi.controller;
 
-import com.favarao.helpdeskapi.entity.User;
+import com.favarao.helpdeskapi.constant.UsuarioPermissao;
 import com.favarao.helpdeskapi.dto.UserDto;
+import com.favarao.helpdeskapi.entity.User;
 import com.favarao.helpdeskapi.repository.UserRepository;
+import com.favarao.helpdeskapi.service.TokenService;
 import com.favarao.helpdeskapi.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +22,10 @@ public class UserController {
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TokenService tokenService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public List<User> list(){
@@ -28,6 +35,9 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User save(@Valid @RequestBody User newUser){
+        if(!newUser.getRole().equals(UsuarioPermissao.ADMIN) && !newUser.getRole().equals(UsuarioPermissao.USER)){
+            throw new RuntimeException("Permissão inválida!");
+        }
         return userRepository.save(newUser);
     }
 
@@ -49,11 +59,4 @@ public class UserController {
         //TODO adicionar atualizar
         return null;
     }
-
-    @PatchMapping("/{userId}")
-    public ResponseEntity<User> atualizarParcial(@Valid @PathVariable Long userId,@RequestBody User user){
-        //TODO adicionar atualização de senha
-        return null;
-    }
-
 }
